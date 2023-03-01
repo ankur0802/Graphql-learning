@@ -2,7 +2,7 @@
 
 query getAllUsers{
   users{
-    id
+    _id
     firstName
     lastName
     email
@@ -10,11 +10,27 @@ query getAllUsers{
   }
 }
 
+-----------------
+
+
+query getUserByID($user_id: ID!){
+  user(_id: $user_id){
+    _id
+    firstName
+    lastName
+    email
+    products{
+      name
+      price
+    }
+  }
+}
+
 ------------------
 
 query getAllProducts {
   users{
-    id
+    _id
     firstName
     products{
       name
@@ -27,8 +43,8 @@ query getAllProducts {
 -----------------
 
 query getUserByID{
-  user(id: "456257"){
-    id
+  user(_id: "456257"){
+    _id
     firstName
     lastName
     email
@@ -47,5 +63,62 @@ query getProductByUser {
     name
     price
     by
+  }
+}
+-----------
+
+mutation createUser($userNew:UserInput!){
+ user: signupUserDummy(userNew:$userNew){
+    _id
+    firstName
+    lastName
+    email
+    password
+  }
+}
+
+in QUERY VARIABLE
+{
+  "userNew":{
+    "firstName": "hello",
+    "lastName": "world",
+    "email": "hello@gmail.com",
+    "password": "1233543534"
+  }
+}
+
+-------------------------
+
+mutation createUser($userNew:UserInput!){
+ user: signupUser(userNew:$userNew){
+    _id
+    firstName
+    lastName
+    email
+    password
+  }
+}
+
+{
+  "userNew":{
+    "firstName": "hello",
+    "lastName": "world",
+    "email": "hello@gmail.com",
+    "password": "1233543534"
+  }
+}
+
+---------------------
+
+mutation signinuser($user:UsersigninInput!){
+ user: signinUser(usersignin:$user){
+  token
+  }
+}
+
+{
+  "user": {
+     "email": "hello@gmail.com",
+    "password": "1233543534"
   }
 }

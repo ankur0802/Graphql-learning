@@ -1,47 +1,31 @@
 import { ApolloServer, gql } from "apollo-server";
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
-import { users, products } from "./dummyDB.js";
+import typeDefs from './schemaGQL/schemaGQL.js'
+import connectDB from "./database/connection.js";
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+dotenv.config();
 
-const typeDefs = gql`
-  type Query {
-    users: [User]
-    user(id:ID!): User
-    products: [Product]
-    myproducts(by:ID!): [Product]
-  }
 
-type User {
-    id: ID!
-    firstName: String!
-    lastName: String!
-    email: String!
-    password: String!
-    products: [Product]
-}
+// connecting database
+connectDB();
 
-  type Product {
-    name: String
-    price: String
-    by: ID!
-  }
+// import models here
+import './models/User.js'
+import './models/Quote.js'
 
-`;
-
-const resolvers = {
-  Query: {
-    users: () => users,
-    user:(parent, {id} )=> users.find(user=> user.id == id),
-    products: ()=> products,
-    myproducts:(_, {by}) => products.filter(products => products.by == by)
-  },
-  User: {
-    products: (ur)=> products.filter(products=> products.by == ur.id) 
-  }
-};
+import resolvers from './resolver/resolvers.js'
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: ({req})=>{
+    const {authorization} = req.headers
+    if(authorization){
+      const {userId} = jwt.verify(authorization, process.env.SECRET_KEY)
+      return {userId}
+    }
+  },
   plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
 }); 
 

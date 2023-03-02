@@ -122,3 +122,24 @@ mutation signinuser($user:UsersigninInput!){
     "password": "1233543534"
   }
 }
+
+
+--------------------
+mutation updateQuote($update:updateQuote){
+updateQuote(update:$update ){
+  name
+}
+}
+
+{
+  "update":{
+  "_id":"640049603b2a2bb5f5cc5f24",
+  "name":"this is updated Quote"
+}
+}
+
+{
+  "authorization":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDAwNDc2ZDE1MjYyYWM3MmE0ZDRkODQiLCJpYXQiOjE2Nzc3NDE4NTl9.MBrhVgFsz3kF_3ToInSdOIrToPk6WfD78r0_2F79hVs"
+}
+
+

@@ -1,4 +1,4 @@
-import { users, quotes } from "../database/dummyDB.js";
+
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
@@ -10,13 +10,13 @@ const Quote = mongoose.model('Quote');
 
 const resolvers = {
     Query: {
-      users: () => users,
-      user:(parent, {_id} )=> users.find(user=> user._id == _id),
-      quotes: ()=> quotes,
-      myquotes:(_, {by}) => quotes.filter(quotes => quotes.by == by)
+      users: async () => await User.find({}),
+      user: async (parent, {_id} )=> await User.findOne({_id}),
+      quotes: async ()=> await Quote.find({}).populate('by', '_id firstName'),
+      myquotes: async (_, {by}) => await Quote.find({by})
     },
     User: {
-      quotes: (ur)=> quotes.filter(quotes=> quotes.by == ur._id) 
+      quotes: async (ur)=> await Quote.find({by:ur._id}) 
     },
     Mutation:{
         signupUser: async (_, {userNew})=>{
@@ -60,6 +60,33 @@ const resolvers = {
           await newQuote.save()
           return "Quote saved successfully"
 
+        },
+
+        deleteQuote: async (_, {_id}, {userId})=>{
+          if(!userId) {
+            throw new Error ('First you have to logged in')
+          }
+          await Quote.findByIdAndDelete({_id});
+          return "Quote Deleted Successfully"
+        },
+
+
+        deleteUser: async (_,{_id}, {userId})=>{
+          if(!userId) {
+            throw new Error ('First you have to logged in')
+          }
+          await User.findByIdAndDelete({_id});
+
+          return "User Deleted Successfully"
+        },
+
+
+        updateQuote: async (_, {update}, {userId})=>{
+          if(!userId) {
+            throw new Error ('First you have to logged in')
+          }
+          const updateQuote = await Quote.findByIdAndUpdate({_id:update._id}, {name:update.name}, {new:true})
+          return await updateQuote;
         }
 
 

@@ -1,10 +1,14 @@
+import { useRoutes } from 'react-router-dom';
 import './App.css';
-import Login from './components/Login';
+import Navbar from './components/Navbar';
+import {routes} from './routes/routes'
 
 function App() {
+  const element = useRoutes(routes)
   return (
     < >
-      <Login/>
+      <Navbar/>
+      {element}
     </>
   );
 }
